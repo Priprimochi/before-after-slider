@@ -19,7 +19,7 @@
       position: relative;
       width: 100%;
       max-width: 900px;
-      aspect-ratio: 4/3;       /* ← 依照你的照片比例調整，人像可改 3/4 */
+      aspect-ratio: 1/1;       /* ← 正方形，可改 4/3（橫）或 3/4（直式人像） */
       overflow: hidden;
       border-radius: 12px;
       user-select: none;
@@ -45,9 +45,14 @@
 
     .ba-after-wrap .ba-img {
       width: auto;
-      min-width: 100vw;         /* 確保 after 圖片不會因為裁切而縮小 */
+      min-width: var(--wrap-width, 100%);
       max-width: none;
       left: 0;
+      position: absolute;
+      top: 0;
+      height: 100%;
+      object-fit: cover;
+      object-position: left center;
     }
 
     /* 分隔線 */
@@ -149,6 +154,8 @@
 
   let dragging = false;
 
+  const afterImg = document.getElementById('afterImg');
+
   function setPos(clientX) {
     const rect = wrap.getBoundingClientRect();
     let x = clientX - rect.left;
@@ -156,7 +163,14 @@
     const pct = (x / rect.width * 100).toFixed(2);
     aw.style.width      = pct + '%';
     handle.style.left   = 'calc(' + pct + '% - 24px)';
+    afterImg.style.width = rect.width + 'px';
   }
+
+  function initAfterWidth() {
+    afterImg.style.width = wrap.offsetWidth + 'px';
+  }
+  initAfterWidth();
+  window.addEventListener('resize', initAfterWidth);
 
   // 滑鼠
   handle.addEventListener('mousedown',  e => { dragging = true; e.preventDefault(); });
